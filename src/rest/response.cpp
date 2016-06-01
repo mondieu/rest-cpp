@@ -3,6 +3,15 @@
 #include <future>
 #include <csignal>
 
+#ifndef MSG_NOSIGNAL
+# define MSG_NOSIGNAL 0
+# ifdef SO_NOSIGPIPE
+#  define CEPH_USE_SO_NOSIGPIPE
+# else
+#  error "Cannot block SIGPIPE!"
+# endif
+#endif
+
 namespace REST {
 
 Response::Response(Request::shared request, std::vector<std::thread>* s) {
