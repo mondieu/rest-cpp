@@ -44,6 +44,7 @@ class Request {
     std::unordered_map< std::string, std::string > parameters;
 
     std::string raw;
+    std::string content;
     size_t length = 0;
 
     template <class T>

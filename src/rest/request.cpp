@@ -50,17 +50,20 @@ Request::Request(int client, struct sockaddr_storage client_addr) : handle(clien
       content_length = header("Content-length", 0);
 
     raw.reserve(content_length);
-
+    content.reserve(content_length);
+    
     if (content_length > 0) {
       // read whats left in header
       length = std::min(content_length, (size_t)(BUFFER_SIZE - request_stream.tellg()));
       raw = std::string(buffer, BUFFER_SIZE).substr(request_stream.tellg(), length);
+      content = "";
 
       // receive some more
       while (length < content_length) {
         memset(buffer, 0, BUFFER_SIZE);
         size_t buffer_length = recv(client, buffer, BUFFER_SIZE, 0);
         raw += std::string(buffer, buffer_length);
+        content += std::string(buffer, buffer_length);
         length += buffer_length;
       }
     }
