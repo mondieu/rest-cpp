@@ -104,12 +104,24 @@ size_t Response::send() {
 
   content += payload;
 
-  // send every byte
+  // send every byte 
   bytes_sent = ::send(handle, content.c_str(), content.size(), MSG_DONTWAIT | MSG_NOSIGNAL);
 
   // close connection with client
-  close(handle);
+  shutdown(handle, SHUT_WR);
+  for(;;) {
+    char buffer[4000];
+    int res=read(handle, buffer, 4000);
+    if(res < 0) {
+        perror("reading");
+        exit(1);
+    }
+    if(!res)
+        break;
+  }
 
+  close(handle);
+  
   return bytes_sent;
 }
 
